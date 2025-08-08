@@ -1,0 +1,68 @@
+import { useState, useEffect } from "react"; import { Card, CardContent } from "@/components/ui/card"; import { Input } from "@/components/ui/input"; import { Button } from "@/components/ui/button"; import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+
+export default function DataToolX() { const [dossiers, setDossiers] = useState([]); const [query, setQuery] = useState(""); const [mode, setMode] = useState("viewer");
+
+useEffect(() => { // Placeholder data for early MVP setDossiers([ { name: "John Doe", knownAliases: ["JD", "Johnny D"], occupations: ["Freelance Consultant"], associatedAddresses: ["123 Main St, Dodge City, KS"], lastSeen: "Aug 3, 2025", flags: ["Watchlist", "Cross-reference needed"] }, { name: "Mary Halston", knownAliases: [], occupations: ["Owner, Prairie Legal LLC"], associatedAddresses: ["785 Dusty Rd, CO"], lastSeen: "Aug 7, 2025", flags: [] } ]); }, []);
+
+const filtered = dossiers.filter(d => d.name.toLowerCase().includes(query.toLowerCase()) );
+
+const handleAdd = () => { const newEntry = { name: "Unknown Entity", knownAliases: [], occupations: [], associatedAddresses: [], lastSeen: "TBD", flags: [] }; setDossiers(prev => [...prev, newEntry]); };
+
+return ( <div className="p-6 space-y-6"> <h1 className="text-2xl font-bold">DataTool-X: Private Dossier Assistant</h1> <p className="text-xs text-red-500 italic"> FOR PRIVATE DEMO PURPOSES ONLY — DO NOT DISTRIBUTE — NOT FINAL PRODUCT — NOT FOR PUBLIC USE </p>
+
+<Tabs defaultValue="viewer" value={mode} onValueChange={setMode}>
+    <TabsList>
+      <TabsTrigger value="viewer">View</TabsTrigger>
+      <TabsTrigger value="admin">Admin</TabsTrigger>
+    </TabsList>
+
+    <TabsContent value="viewer">
+      <Input
+        placeholder="Search dossiers..."
+        value={query}
+        onChange={e => setQuery(e.target.value)}
+        className="w-full mt-4"
+      />
+
+      <div className="space-y-4 mt-6">
+        {filtered.map((d, index) => (
+          <Card key={index}>
+            <CardContent className="p-4 space-y-1">
+              <p className="font-semibold text-lg">{d.name}</p>
+              {d.knownAliases.length > 0 && (
+                <p className="text-sm text-gray-600">
+                  Aliases: {d.knownAliases.join(", ")}
+                </p>
+              )}
+              {d.occupations.length > 0 && (
+                <p className="text-sm">Occupations: {d.occupations.join(", ")}</p>
+              )}
+              {d.associatedAddresses.length > 0 && (
+                <p className="text-sm">Addresses: {d.associatedAddresses.join(", ")}</p>
+              )}
+              <p className="text-sm text-gray-500">Last Seen: {d.lastSeen}</p>
+              {d.flags.length > 0 && (
+                <p className="text-sm text-yellow-700">Flags: {d.flags.join(", ")}</p>
+              )}
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </TabsContent>
+
+    <TabsContent value="admin">
+      <div className="space-y-4 mt-6">
+        <h2 className="text-xl font-semibold">Manage Dossiers</h2>
+        <Button onClick={handleAdd}>Add New Entry</Button>
+        <ul className="list-disc ml-6 mt-4 text-sm">
+          {dossiers.map((d, i) => (
+            <li key={i}>{d.name} — Last Seen: {d.lastSeen}</li>
+          ))}
+        </ul>
+      </div>
+    </TabsContent>
+  </Tabs>
+</div>
+
+); }
+
